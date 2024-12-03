@@ -14,7 +14,7 @@ IF %ERRORLEVEL% NEQ 0 (
     exit /b %ERRORLEVEL%
 )
 
-git push
+git push --set-upstream origin master
 IF %ERRORLEVEL% NEQ 0 (
     echo Error during git push
     pause
