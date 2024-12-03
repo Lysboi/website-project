@@ -1,25 +1,24 @@
 @echo off
 echo Git changes saving started...
 git add .
-IF %ERRORLEVEL% NEQ 0 (
-    echo Error during git add
-    pause
-    exit /b %ERRORLEVEL%
-)
 
 git commit -m "Auto save: %date% %time%"
-IF %ERRORLEVEL% NEQ 0 (
-    echo Error during git commit
-    pause
-    exit /b %ERRORLEVEL%
+if %errorlevel% equ 0 (
+    echo Changes committed successfully!
+) else (
+    if %errorlevel% equ 1 (
+        echo No changes to commit
+    ) else (
+        echo Error during commit
+    )
 )
 
 git push --set-upstream origin master
-IF %ERRORLEVEL% NEQ 0 (
-    echo Error during git push
+if %errorlevel% neq 0 (
+    echo Error during push
     pause
-    exit /b %ERRORLEVEL%
+    exit /b %errorlevel%
 )
 
-echo Done!
+echo Done! All changes saved to GitHub
 pause
