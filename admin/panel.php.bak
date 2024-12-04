@@ -1,0 +1,1 @@
+<?php echo file_get_contents('f:\xampp\htdocs\claude\admin\panel.php'); ?>

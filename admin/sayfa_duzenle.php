@@ -2,115 +2,54 @@
 session_start();
 require_once '../includes/config.php';
 
-// Oturum kontrolü
 if(!isset($_SESSION['admin_id'])) {
     header("Location: index.php");
     exit;
 }
 
-// AJAX istekleri için işlemler
+// Debug için
+if(isset($_POST['islem'])) {
+    error_log("Gelen POST verileri: " . print_r($_POST, true));
+}
+
 if(isset($_POST['islem'])) {
     $response = ['success' => false, 'message' => ''];
     
     switch($_POST['islem']) {
-        case 'siralama_guncelle':
-            $siralar = json_decode($_POST['siralar'], true);
-            foreach($siralar as $id => $sira) {
-                $stmt = $conn->prepare("UPDATE sayfa_bolumleri SET sira = ? WHERE id = ?");
-                $stmt->execute([$sira, $id]);
-            }
-            $response = ['success' => true, 'message' => 'Sıralama güncellendi'];
-            break;
-            
         case 'bolum_ekle':
-            $baslik = trim($_POST['baslik']);
-            $tip = trim($_POST['tip']);
-            $varsayilan_ayarlar = [];
-            
-            switch($tip) {
-                case 'hero':
-                    $varsayilan_ayarlar = [
-                        'baslik' => 'Yeni Hero Başlığı',
-                        'aciklama' => 'Hero açıklama metni',
-                        'buton_text' => 'Randevu Al',
-                        'buton_link' => '#'
-                    ];
-                    break;
-                case 'metin':
-                    $varsayilan_ayarlar = [
-                        'baslik' => 'Yeni Metin Bölümü',
-                        'icerik' => 'İçerik metni buraya gelecek',
-                        'arka_plan' => 'acik' // açık/koyu
-                    ];
-                    break;
-                case 'hizmetler':
-                    $varsayilan_ayarlar = [
-                        'baslik' => 'Hizmetlerimiz',
-                        'aciklama' => 'Hizmetler bölüm açıklaması',
-                        'goruntulenecek_sayi' => 3,
-                        'siralama' => 'yeni' // yeni/eski/rastgele
-                    ];
-                    break;
-                case 'galeri':
-                    $varsayilan_ayarlar = [
-                        'baslik' => 'Galeri',
-                        'aciklama' => 'Galeri bölüm açıklaması',
-                        'goruntulenecek_sayi' => 6,
-                        'kategori' => 'hepsi'
-                    ];
-                    break;
+            try {
+                $query = "INSERT INTO sayfa_bolumleri (sayfa, baslik, icerik, arka_plan, aktif, sira) VALUES (?, ?, ?, ?, 1, 0)";
+                error_log("SQL Sorgusu: " . $query);
+                
+                $stmt = $conn->prepare($query);
+                $success = $stmt->execute([
+                    $_POST['sayfa'],
+                    $_POST['baslik'],
+                    $_POST['icerik'],
+                    $_POST['arka_plan']
+                ]);
+                
+                if($success) {
+                    $response = ['success' => true, 'message' => 'Bölüm başarıyla eklendi'];
+                } else {
+                    $response = ['success' => false, 'message' => 'Veritabanına eklenemedi'];
+                    error_log("PDO Hata Bilgisi: " . print_r($stmt->errorInfo(), true));
+                }
+            } catch(PDOException $e) {
+                $response = ['success' => false, 'message' => $e->getMessage()];
+                error_log("PDO Hatası: " . $e->getMessage());
             }
-            
-            $stmt = $conn->prepare("INSERT INTO sayfa_bolumleri (baslik, tip, ayarlar) VALUES (?, ?, ?)");
-            $stmt->execute([$baslik, $tip, json_encode($varsayilan_ayarlar)]);
-            $yeni_id = $conn->lastInsertId();
-            
-            $response = [
-                'success' => true, 
-                'message' => 'Bölüm eklendi',
-                'id' => $yeni_id
-            ];
             break;
             
+        case 'bolumleri_getir':
+            $stmt = $conn->query("SELECT * FROM sayfa_bolumleri ORDER BY sira ASC");
+            $response = ['success' => true, 'bolumler' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+            break;
+
         case 'bolum_sil':
-            $id = (int)$_POST['id'];
             $stmt = $conn->prepare("DELETE FROM sayfa_bolumleri WHERE id = ?");
-            $stmt->execute([$id]);
-            $response = ['success' => true, 'message' => 'Bölüm silindi'];
-            break;
-            
-        case 'bolum_guncelle':
-            $id = (int)$_POST['id'];
-            $ayarlar = json_decode($_POST['ayarlar'], true);
-            $stmt = $conn->prepare("UPDATE sayfa_bolumleri SET ayarlar = ? WHERE id = ?");
-            $stmt->execute([json_encode($ayarlar), $id]);
-            $response = ['success' => true, 'message' => 'Bölüm güncellendi'];
-            break;
-            
-        case 'durum_degistir':
-            $id = (int)$_POST['id'];
-            $aktif = (int)$_POST['aktif'];
-            $stmt = $conn->prepare("UPDATE sayfa_bolumleri SET aktif = ? WHERE id = ?");
-            $stmt->execute([$aktif, $id]);
-            $response = ['success' => true, 'message' => 'Durum güncellendi'];
-            break;
-            
-        case 'bolum_bilgi_getir':
-            $id = (int)$_POST['id'];
-            $stmt = $conn->prepare("SELECT * FROM sayfa_bolumleri WHERE id = ?");
-            $stmt->execute([$id]);
-            $bolum = $stmt->fetch();
-            if($bolum) {
-                $response = [
-                    'success' => true,
-                    'data' => [
-                        'id' => $bolum['id'],
-                        'baslik' => $bolum['baslik'],
-                        'tip' => $bolum['tip'],
-                        'ayarlar' => json_decode($bolum['ayarlar'], true)
-                    ]
-                ];
-            }
+            $stmt->execute([$_POST['id']]);
+            $response = ['success' => true];
             break;
     }
     
@@ -119,7 +58,5 @@ if(isset($_POST['islem'])) {
     exit;
 }
 
-// Mevcut bölümleri çek
-$stmt = $conn->query("SELECT * FROM sayfa_bolumleri ORDER BY sira ASC");
-$bolumler = $stmt->fetchAll();
+require_once 'templates/sayfa_duzenle_html.php';
 ?>

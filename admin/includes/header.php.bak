@@ -29,13 +29,6 @@ if(strpos($currentDir, '/pages/') !== false) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js"></script>
-    
-    <?php if($currentPage === 'sayfa_duzenle'): ?>
-    <!-- Sayfa Düzenleme JS -->
-    <script src="<?php echo $baseUrl; ?>js/sayfa/core.js"></script>
-    <script src="<?php echo $baseUrl; ?>js/sayfa/forms.js"></script>
-    <script src="<?php echo $baseUrl; ?>js/sayfa/handlers.js"></script>
-    <?php endif; ?>
 </head>
 <body class="bg-gray-900 text-white">
     <!-- Navbar -->
