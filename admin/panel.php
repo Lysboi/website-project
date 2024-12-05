@@ -62,10 +62,6 @@ if(!isset($_SESSION['admin_id'])) {
                     <i class="fas fa-cog mr-3"></i>
                     Site Ayarları
                 </a>
-                <a href="sayfa_duzenle.php" class="flex items-center px-6 py-3 text-white hover:bg-gray-700">
-                    <i class="fas fa-edit mr-3"></i>
-                    Sayfa Düzenle
-                </a>
             </nav>
         </div>
 

@@ -8,7 +8,7 @@ if(!isset($_SESSION['admin_id'])) {
     exit;
 }
 
-// Hizmet ID kontrolü
+// ID kontrolü
 if(!isset($_GET['id'])) {
     header("Location: hizmetler.php");
     exit;
@@ -28,7 +28,7 @@ if(isset($_POST['hizmet_guncelle'])) {
     $mesaj = "Hizmet başarıyla güncellendi!";
     $mesaj_tur = "success";
     
-    // Mevcut hizmet bilgilerini tekrar çek
+    // Güncel verileri tekrar çek
     $stmt = $conn->prepare("SELECT * FROM hizmetler WHERE id = ?");
     $stmt->execute([$id]);
     $hizmet = $stmt->fetch();
@@ -39,6 +39,7 @@ if(isset($_POST['hizmet_guncelle'])) {
     $hizmet = $stmt->fetch();
 }
 
+// Hizmet bulunamadıysa listeye geri dön
 if(!$hizmet) {
     header("Location: hizmetler.php");
     exit;
@@ -50,7 +51,7 @@ if(!$hizmet) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hizmet Düzenle - Sed Nail Art Yönetim Paneli</title>
+    <title>Hizmet Düzenle - Sed Nail Art</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -60,9 +61,9 @@ if(!$hizmet) {
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
-                    <a href="panel.php" class="text-xl font-bold text-gold-500" style="color: #D4AF37;">
+                    <div class="text-xl font-bold text-gold-500" style="color: #D4AF37;">
                         Sed Nail Art
-                    </a>
+                    </div>
                 </div>
                 <div class="flex items-center">
                     <span class="mr-4">Hoş geldiniz, <?php echo htmlspecialchars($_SESSION['admin_kullanici']); ?></span>

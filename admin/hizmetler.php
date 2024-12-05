@@ -2,7 +2,7 @@
 session_start();
 require_once '../includes/config.php';
 
-// Oturum kontrolü
+// Kullanıcı girişi kontrolü
 if(!isset($_SESSION['admin_id'])) {
     header("Location: index.php");
     exit;
@@ -40,7 +40,7 @@ $hizmetler = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hizmetler - Sed Nail Art Yönetim Paneli</title>
+    <title>Hizmetler - Sed Nail Art</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -50,9 +50,9 @@ $hizmetler = $stmt->fetchAll();
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
-                    <a href="panel.php" class="text-xl font-bold text-gold-500" style="color: #D4AF37;">
+                    <div class="text-xl font-bold text-gold-500" style="color: #D4AF37;">
                         Sed Nail Art
-                    </a>
+                    </div>
                 </div>
                 <div class="flex items-center">
                     <span class="mr-4">Hoş geldiniz, <?php echo htmlspecialchars($_SESSION['admin_kullanici']); ?></span>
